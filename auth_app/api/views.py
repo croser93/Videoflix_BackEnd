@@ -1,5 +1,11 @@
 from rest_framework.views import APIView
 
 
-def RegistrationView (APIView):
+class RegistrationView(APIView):
+    pass
+
+class LoginView(APIView):
+    pass
+
+class LogoutView(APIView):
     pass
