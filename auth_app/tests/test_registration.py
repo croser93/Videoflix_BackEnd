@@ -5,6 +5,10 @@ from rest_framework import status
 
 class RegistrationTest(APITestCase):
 
+    def setUp(self):
+        self.user = User.objects.create_user(username='max', email='test1@gmx.de', password="123456")
+
+
     def test_registration_happy(self):
         url = reverse('register')
         data = {
@@ -14,6 +18,7 @@ class RegistrationTest(APITestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['detail'], 'User created successfully!')
 
     def test_registration_400(self):
         url = reverse('register')
@@ -23,3 +28,25 @@ class RegistrationTest(APITestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_registration_email_exist(self):
+        url = reverse('register')
+        data = {
+            'email': "test1@gmx.de",
+            'password': "123456",
+            "confirmed_password": "123456"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'email exist')
+
+    def test_registration_pw_dont_match(self):
+        url = reverse('register')
+        data = {
+            'email': "test@gmx.de",
+            'password': "123456",
+            "confirmed_password": "99999999"
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'password dont match')

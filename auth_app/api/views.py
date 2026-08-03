@@ -13,7 +13,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
-            print("erfolgreich erstellt")
+            serializer.save()
         else:
             return Response(serializer.errors, status=400)
         return Response ({"detail": "User created successfully!"}, status=201)
