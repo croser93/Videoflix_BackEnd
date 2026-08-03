@@ -87,4 +87,3 @@ ipython_config.py
 .pdm-python
 .pdm-build/
 .env
-core\__pycache__
