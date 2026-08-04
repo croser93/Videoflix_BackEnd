@@ -19,7 +19,8 @@ class RegistrationTest(APITestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['detail'], 'User created successfully!')
+        self.assertEqual(CustomUser.objects.count(), 2)
+        self.assertEqual(response.data['user'], response.data['user'])
 
     def test_registration_400(self):
         url = reverse('register')
@@ -29,6 +30,7 @@ class RegistrationTest(APITestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(CustomUser.objects.count(), 1)
 
     def test_registration_email_exist(self):
         url = reverse('register')
@@ -40,6 +42,7 @@ class RegistrationTest(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['error'], 'email exist')
+        self.assertEqual(CustomUser.objects.count(), 1)
 
     def test_registration_pw_dont_match(self):
         url = reverse('register')
@@ -51,3 +54,4 @@ class RegistrationTest(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['error'], 'password dont match')
+        self.assertEqual(CustomUser.objects.count(), 1)
