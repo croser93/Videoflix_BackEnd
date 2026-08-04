@@ -90,6 +90,9 @@ DATABASES = {
         "PORT": os.environ.get("DB_PORT", default=5432)
     }
 }
+
+AUTH_USER_MODEL = 'auth_app.CustomUser'
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

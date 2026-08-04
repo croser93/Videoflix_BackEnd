@@ -1,12 +1,13 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
+from auth_app.models import CustomUser
 from django.urls import reverse
 from rest_framework import status
 
 class RegistrationTest(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='max', email='test1@gmx.de', password="123456")
+        self.user = CustomUser.objects.create_user(email='test1@gmx.de', password="123456")
 
 
     def test_registration_happy(self):

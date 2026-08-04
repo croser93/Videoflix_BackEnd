@@ -1,16 +1,17 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from auth_app.models import CustomUser
 
 class RegisterSerializer(serializers.ModelSerializer):
 
     confirmed_password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ['email', 'password', 'confirmed_password']
         extra_kwargs = {
             'password': {'write_only': True},
-            'email': {'required': True}
+            'email': {'required': True, 'validators': []}
         }
 
     def save(self, **kwargs):
@@ -18,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         pw = self.validated_data['password']
         confirmed_password = self.validated_data['confirmed_password']
 
-        all_emails = User.objects.filter(email=email).exists()
+        all_emails = CustomUser.objects.filter(email=email).exists()
 
         if pw != confirmed_password:
             raise serializers.ValidationError({'error': 'password dont match' })
@@ -26,10 +27,5 @@ class RegisterSerializer(serializers.ModelSerializer):
         if all_emails:
             raise serializers.ValidationError({'error' : 'email exist'})
         
-        account = User (
-            email = email
-        )
-
-        account.set_password(pw)
-        account.save()
+        account = CustomUser.objects.create_user(email=email, password=pw)
         return account
