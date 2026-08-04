@@ -8,7 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password', 'confirmed_password']
+        fields = ['id', 'email', 'password', 'confirmed_password']
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'required': True, 'validators': []}
@@ -28,4 +28,5 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'error' : 'email exist'})
         
         account = CustomUser.objects.create_user(email=email, password=pw)
+        self.instance = account
         return account
