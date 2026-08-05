@@ -11,8 +11,9 @@ class ActivateUser(APITestCase):
         self.uid = encode_uid(self.user)
         self.token = account_activation_token.make_token(self.user)
 
+
     def test_activate_user_happy(self):
-        url = reverse('acivate_token', args=[self.uid, self.token])
+        url = reverse('activate_token', args=[self.uid, self.token])
         self.assertFalse(self.user.is_active)
         response = self.client.get(url)
 
@@ -20,25 +21,27 @@ class ActivateUser(APITestCase):
         self.user.refresh_from_db()
         self.assertTrue(self.user.is_active)
 
+
     def test_activate_user_is_aktiv(self):
-        url = reverse('acivate_token', args=[self.uid, self.token])
+        url = reverse('activate_token', args=[self.uid, self.token])
 
         self.user.is_active = True
         self.user.save()
 
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     
     def test_activate_user_uid_invalid(self):
-        url = reverse('acivate_token', args=['9999', self.token])
+        url = reverse('activate_token', args=['9999', self.token])
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'],'Account does not exist.', status.HTTP_400_BAD_REQUEST)
+
 
     def test_activate_user_token_invalid(self):
-        url = reverse('acivate_token', args=[self.uid, 'invalid Token 9999999'])
+        url = reverse('activate_token', args=[self.uid, 'invalid Token 9999999'])
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

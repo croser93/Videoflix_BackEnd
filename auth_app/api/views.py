@@ -4,6 +4,7 @@ from .serializer import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
+from auth_app.models import CustomUser
 
 
 
@@ -30,9 +31,13 @@ class ActivateTokenView(APIView):
     def get(self, request, uidb64, token):
         user = get_user_from_uidb64(uidb64)
         if user is None:
-            return Response({'error': 'user is none'}, status=400)
+            return Response({'error': 'Account does not exist.'}, status=400)
+        
         valid = account_activation_token.check_token(user, token)
-
+        
+        if user.is_active:
+            return Response({'error': 'Account already activated.'}, status=400)
+        
         if valid:
             user.is_active = True
             user.save()
