@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from auth_app.models import CustomUser
+from django.contrib.auth import authenticate
 
 class RegisterSerializer(serializers.ModelSerializer):
 
@@ -29,3 +30,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         account = CustomUser.objects.create_user(email=email, password=pw)
         self.instance = account
         return account
+
+class LoginSerializer(serializers.Serializer):
+
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(email=data['email'], password=data['password'])
+
+        if user:
+            return{'user': user}
+        else:
+            raise serializers.ValidationError({'error': 'wrong credentials'})
+    

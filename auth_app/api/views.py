@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import  AllowAny
-from .serializer import RegisterSerializer
+from .serializer import RegisterSerializer, LoginSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
-from auth_app.models import CustomUser
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import (TokenRefreshView)
 
 
 
@@ -45,7 +46,23 @@ class ActivateTokenView(APIView):
         return Response({"message": "Account not activated!."}, status=400)
 
 class LoginView(APIView):
-    pass
+
+    def post(self, request):
+        data = request.data
+        serializer = LoginSerializer(data=data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token = RefreshToken.for_user(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+
+            response = Response({'detail': 'Login successfully!', 'user': {'id':user.id, 'username': user.email}} ,status=200)
+            response.set_cookie('refresh_token', refresh_token, httponly=True)
+            response.set_cookie('access_token', access_token, httponly=True)
+            return response
+        else:
+            return Response(serializer.errors, status=401)
 
 class LogoutView(APIView):
     pass
