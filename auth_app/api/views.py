@@ -3,6 +3,8 @@ from rest_framework.permissions import  AllowAny
 from .serializer import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from auth_app.utils import encode_uid, account_activation_token
+
 
 
 class RegisterView(APIView):
@@ -13,7 +15,10 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
+           account = serializer.save()
+           uid = encode_uid(account)
+           token = account_activation_token.make_token(account)
+           print(uid, token)
         else:
             return Response(serializer.errors, status=400)
         return Response ({"user": serializer.data}, status=201)
