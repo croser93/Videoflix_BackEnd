@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import  AllowAny
+from rest_framework.permissions import  AllowAny, IsAuthenticated
 from .serializer import RegisterSerializer, LoginSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -65,4 +65,14 @@ class LoginView(APIView):
             return Response(serializer.errors, status=401)
 
 class LogoutView(APIView):
-    pass
+
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        refresh = request.COOKIES.get('refresh_token')
+
+        token = RefreshToken(refresh)
+        token.blacklist()
+        response = Response({"detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."}, status=status.HTTP_200_OK)
+        response.delete_cookie("access_token")
+        response.delete_cookie('refresh_token')
+        return response
