@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (TokenRefreshView)
 
 
-
 class RegisterView(APIView):
 
     permission_classes = [AllowAny]
@@ -66,13 +65,20 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
     def post(self, request):
         refresh = request.COOKIES.get('refresh_token')
+        if refresh is None:
+            return Response({'detail': 'Refresh token is missing.'}, status=400)
 
-        token = RefreshToken(refresh)
-        token.blacklist()
-        response = Response({"detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."}, status=status.HTTP_200_OK)
+        try:
+            token = RefreshToken(refresh)
+            token.blacklist()
+        except:
+            return Response({'detail': 'Refresh token is invalid.'}, status=400)
+
+        response = Response({"detail": "Logout successful! All tokens will be deleted. Refresh token is now invalid."}, status=200)
         response.delete_cookie("access_token")
         response.delete_cookie('refresh_token')
         return response
@@ -83,12 +89,12 @@ class RefreshCookieView(TokenRefreshView):
         refresh = request.COOKIES.get('refresh_token')
 
         if refresh is None:
-            return Response({'detail':'Refresh token is missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail':'Refresh token is missing.'}, status=400)
         request.data['refresh'] = refresh
         try:
             access = super().post(request)
         except:
-            return Response({'detail': 'Refresh token is invalid.'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail': 'Refresh token is invalid.'}, status=401)
         access_token = access.data['access']
 
         response = Response({'detail': 'Token refreshed', 'access': access_token}, status=200)
