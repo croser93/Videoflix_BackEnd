@@ -29,3 +29,4 @@ class LogoutTest(APITestCase):
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['error'],"Refresh-Token is missing.")
