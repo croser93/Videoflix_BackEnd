@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import  AllowAny, IsAuthenticated
-from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer, PasswortConfirmSerializer
+from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer, passwordConfirmSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
@@ -133,11 +133,11 @@ class PasswordConfirmView(APIView):
             return Response({'error': 'Token is invalid.'}, status=400)
 
         data = request.data
-        serializer = PasswortConfirmSerializer(data=data)
+        serializer = passwordConfirmSerializer(data=data)
 
         if serializer.is_valid():
-            new_passwort = serializer.validated_data['new_password']
-            user.set_password(new_passwort)
+            new_password = serializer.validated_data['new_password']
+            user.set_password(new_password)
             user.save()
             return Response({'detail': 'Your Password has been successfully reset.'}, status=200)
-        return Response({'error': 'passwort dont match.'}, status=400)
+        return Response({'error': 'password dont match.'}, status=400)
