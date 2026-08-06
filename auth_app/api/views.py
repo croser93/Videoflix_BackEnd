@@ -6,6 +6,7 @@ from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (TokenRefreshView)
+from auth_app.tasks import send_activation_email, send_password_reset_mail
 
 
 class RegisterView(APIView):
@@ -19,6 +20,7 @@ class RegisterView(APIView):
             account = serializer.save()
             uid = encode_uid(account)
             token = account_activation_token.make_token(account)
+            send_activation_email(account, uid, token)
 
         else:
             return Response(serializer.errors, status=400)
