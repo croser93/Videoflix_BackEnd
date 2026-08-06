@@ -17,6 +17,13 @@ services:
     container_name: videoflix_redis
     volumes:
       - redis_data:/data
+  
+  mailhog:
+    image: mailhog/mailhog
+    container_name: videoflix_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
   web:
     build:
