@@ -26,7 +26,7 @@ class RegisterView(APIView):
 
         else:
             return Response(serializer.errors, status=400)
-        return Response ({"user": serializer.data}, status=201)
+        return Response({"user": serializer.data, "token": token}, status=201)
 
 class ActivateTokenView(APIView):
 
@@ -60,7 +60,7 @@ class LoginView(APIView):
             refresh_token = str(token)
             access_token = str(token.access_token)
 
-            response = Response({'detail': 'Login successfully!', 'user': {'id':user.id, 'username': user.email}} ,status=200)
+            response = Response({'detail': '"Login successful', 'user': {'id':user.id, 'username': user.email}} ,status=200)
             response.set_cookie('refresh_token', refresh_token, httponly=True)
             response.set_cookie('access_token', access_token, httponly=True)
             return response

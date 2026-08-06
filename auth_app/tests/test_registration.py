@@ -20,6 +20,7 @@ class RegistrationTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CustomUser.objects.count(), 2)
         self.assertEqual(response.data['user'], response.data['user'])
+        self.assertTrue(response.data['token'])
 
     def test_registration_400(self):
         url = reverse('register')

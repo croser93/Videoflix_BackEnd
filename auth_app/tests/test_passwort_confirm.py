@@ -50,4 +50,16 @@ class PasswordConfirmTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['error'], 'passwort dont match.')
 
+    def test_password_confirm_token_reused_after_reset(self):
+        self.token = default_token_generator.make_token(self.user)
+        url = reverse('password_confirm', args=[self.uid, self.token])
+        data = {
+            "new_password": "newsecurepassword",
+            "confirm_password": "newsecurepassword"
+        }
+        self.client.post(url, data)
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
