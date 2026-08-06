@@ -1,18 +1,19 @@
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from auth_app.models import CustomUser
 import base64
 
+url = 'http://localhost:4200'
+
 def send_activation_email(email, uid, token):
-    uid_token_link = f"/activate/{uid}/{token}/" 
+    uid_token_link = f"{url}/api/activate/{uid}/{token}/" 
 
     with open("auth_app/static/logo.png", "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode("utf-8") 
 
     html_content = render_to_string(
     "activations_email.html",
-    context={"link": uid_token_link, "email": email, "logo": logo_base64},
+    context={"link": uid_token_link, "email": email, "logo": logo_base64, 'url': url},
     )
 
     msg = EmailMultiAlternatives(
@@ -29,7 +30,7 @@ def send_activation_email(email, uid, token):
     
 def send_password_reset_mail(email, uid, token):
 
-    uid_token_link = f"/reset_password/{uid}/{token}//" 
+    uid_token_link = f"{url}/api/reset_password/{uid}/{token}/" 
     
     with open("auth_app/static/logo.png", "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode("utf-8") 
