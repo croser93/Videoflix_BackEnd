@@ -2,8 +2,7 @@ from rest_framework.test import APITestCase
 from auth_app.models import CustomUser
 from django.urls import reverse
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from auth_app.utils import encode_uid, account_activation_token
+
 
 class PasswordResetTest(APITestCase):
 

@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import  AllowAny, IsAuthenticated
-from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer
+from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer, PasswortConfirmSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
@@ -121,4 +121,23 @@ class PasswordResetView(APIView):
             return response
         return Response({'detail': 'Invalid Email.'}, status=400)
 
-                
+class PasswordConfirmView(APIView):
+    def post (self, request, uidb64, token):
+
+        user = get_user_from_uidb64(uidb64)
+        if user is None:
+            return Response({'error': 'Account does not exist.'}, status=400)
+
+        valid = default_token_generator.check_token(user, token)
+        if not valid:
+            return Response({'error': 'Token is invalid.'}, status=400)
+
+        data = request.data
+        serializer = PasswortConfirmSerializer(data=data)
+
+        if serializer.is_valid():
+            new_passwort = serializer.validated_data['new_password']
+            user.set_password(new_passwort)
+            user.save()
+            return Response({'detail': 'Your Password has been successfully reset.'}, status=200)
+        return Response({'error': 'passwort dont match.'}, status=400)
