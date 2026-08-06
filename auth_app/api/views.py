@@ -1,12 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import  AllowAny, IsAuthenticated
-from .serializer import RegisterSerializer, LoginSerializer
+from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (TokenRefreshView)
+from auth_app.models import CustomUser
 from auth_app.tasks import send_activation_email, send_password_reset_mail
+from django.contrib.auth.tokens import default_token_generator
 
 
 class RegisterView(APIView):
@@ -102,3 +104,21 @@ class RefreshCookieView(TokenRefreshView):
         response = Response({'detail': 'Token refreshed', 'access': access_token}, status=200)
         response.set_cookie('access_token', access_token, httponly=True)
         return response
+
+class PasswordResetView(APIView):
+
+    def post(self, request):
+        data = request.data
+        serializer = PasswordResetSerializer(data=data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = CustomUser.objects.filter(email=email).first()
+            if user is not None:
+                uid = encode_uid(user)
+                token = default_token_generator.make_token(user)
+                send_password_reset_mail(user, uid, token)
+            response = Response({'detail': 'An email has been sent to reset your password.'}, status=200)
+            return response
+        return Response({'detail': 'Invalid Email.'}, status=400)
+
+                

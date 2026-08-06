@@ -44,3 +44,7 @@ class LoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError({'error': 'wrong credentials'})
     
+
+class PasswordResetSerializer(serializers.Serializer):
+    
+    email = serializers.EmailField(write_only=True)
