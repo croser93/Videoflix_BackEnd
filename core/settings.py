@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i$ttzw@iqz$ur)894=u35zire2)o+$&_ziao64v^@jjml@z^gx'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = os.getenv('DEBUG')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://localhost:4200").split(",")
 
 
 # Application definition
@@ -37,8 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     "rest_framework",
+    'auth_app'
 ]
 
 MIDDLEWARE = [
@@ -75,9 +82,36 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME", default="videoflix_db"),
+        "USER": os.environ.get("DB_USER", default="videoflix_user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", default="supersecretpassword"),
+        "HOST": os.environ.get("DB_HOST", default="db"),
+        "PORT": os.environ.get("DB_PORT", default=5432)
+    }
+}
+
+AUTH_USER_MODEL = 'auth_app.CustomUser'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_LOCATION", default="redis://redis:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "videoflix"
+    }
+}
+
+RQ_QUEUES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'HOST': os.environ.get("REDIS_HOST", default="redis"),
+        'PORT': os.environ.get("REDIS_PORT", default=6379),
+        'DB': os.environ.get("REDIS_DB", default=0),
+        'DEFAULT_TIMEOUT': 900,
+        'REDIS_CLIENT_KWARGS': {},
     }
 }
 
@@ -116,4 +150,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "static"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'auth_app.api.permissions.CookieJWTAuth'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ]
+
+}
