@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'corsheaders',
     "rest_framework",
     'auth_app',
-    'media_app'
+    'media_app.apps.MediaAppConfig'
 ]
 
 MIDDLEWARE = [
