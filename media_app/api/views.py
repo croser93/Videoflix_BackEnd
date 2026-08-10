@@ -33,3 +33,16 @@ class HlsIndexView(APIView):
         else:
             return Response(status=404)
 
+class HlsSegmentView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, movie_id, resolution, segment):
+
+        hls_index = get_object_or_404(VideoModel,pk=movie_id)
+        path = Path(settings.MEDIA_ROOT) /  'videos' / str(movie_id)  /str(resolution) / str(segment)
+        if path.exists():
+            return FileResponse(open(path, 'rb'),content_type='video/MP2T')
+        else:
+            return Response(status=404)
+
