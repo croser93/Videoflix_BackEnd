@@ -3,9 +3,10 @@ from .models import VideoModel
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 from .tasks import convert_to_480p, convert_to_720p, convert_to_1080p
-import os
 from pathlib import Path
+import os
 import django_rq
+import shutil
 
 
 @receiver(post_save, sender=VideoModel)
@@ -26,10 +27,8 @@ def video_auto_delete(sender, instance, **kwargs):
             os.remove(instance.thumbnail_url.path)
 
         source_path = Path(instance.video_file.path)
-        path_480p = source_path.with_stem(f"{source_path.stem}_480p")
-        path_720p = source_path.with_stem(f"{source_path.stem}_720p")
+        path_name = source_path.parent / str(instance.id) 
 
-        if os.path.isfile(path_480p):
-            os.remove(path_480p)
-        if os.path.isfile(path_720p):
-            os.remove(path_720p)
+        if path_name.exists():
+            shutil.rmtree(path_name)
+
