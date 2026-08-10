@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 import base64
 import django_rq
 
-url = 'http://localhost:4200'
+url = 'http://127.0.0.1:8000'
 
 def send_activation_email(email, uid, token):
     uid_token_link = f"{url}/api/activate/{uid}/{token}/" 
