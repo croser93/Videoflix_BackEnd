@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 import base64
+import django_rq
 
 url = 'http://localhost:4200'
 
@@ -24,7 +25,8 @@ def send_activation_email(email, uid, token):
         headers={"List-Unsubscribe": "<info@Videoflix.com>"},
     )
     msg.attach_alternative(html_content, "text/html")
-    msg.send()
+    queue = django_rq.get_queue('email', autocommit=True)
+    queue.enqueue(msg.send)
 
 
     
@@ -48,4 +50,5 @@ def send_password_reset_mail(email, uid, token):
         headers={"List-Unsubscribe": "<info@Videoflix.com>"},
     )
     msg.attach_alternative(html_content, "text/html")
-    msg.send()
+    queue = django_rq.get_queue('email', autocommit=True)
+    queue.enqueue(msg.send)

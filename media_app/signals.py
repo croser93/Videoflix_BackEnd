@@ -5,13 +5,16 @@ from django.db.models.signals import post_save, post_delete
 from .tasks import convert_to_480p, convert_to_720p
 import os
 from pathlib import Path
+import django_rq
 
 
 @receiver(post_save, sender=VideoModel)
 def video_post_Save(sender, instance, created, **kwargs):
     if created:
-        convert_to_480p(instance.video_file.path)
-        convert_to_720p(instance.video_file.path)
+        queue = django_rq.get_queue('video_conferter', autocommit=True)
+        queue.enqueue( convert_to_480p, instance.video_file.path)
+        queue.enqueue( convert_to_720p, instance.video_file.path)
+
 
 @receiver(post_delete, sender=VideoModel)
 def video_auto_delete(sender, instance, **kwargs):

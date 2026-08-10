@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'corsheaders',
     "rest_framework",
     'auth_app',
-    'media_app.apps.MediaAppConfig'
+    'media_app.apps.MediaAppConfig',
+    "django_rq",
 ]
 
 MIDDLEWARE = [
@@ -172,3 +173,21 @@ REST_FRAMEWORK = {
     ]
 
 }
+
+
+RQ_QUEUES = {
+    'video_conferter': {
+        'HOST': os.environ.get("REDIS_HOST", default="redis"),
+        'PORT': os.environ.get("REDIS_PORT", default=6379),
+        'DB': os.environ.get("REDIS_DB", default=0),
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'email': {
+    'HOST': os.environ.get("REDIS_HOST", default="redis"),
+    'PORT': os.environ.get("REDIS_PORT", default=6379),
+    'DB': os.environ.get("REDIS_DB", default=0),
+    'DEFAULT_TIMEOUT': 360,
+}
+}
+
+RQ_EXCEPTION_HANDLERS = ['path.to.my.handler']  # If you need custom exception handlers
