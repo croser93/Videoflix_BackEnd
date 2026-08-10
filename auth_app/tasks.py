@@ -25,7 +25,7 @@ def send_activation_email(email, uid, token):
         headers={"List-Unsubscribe": "<info@Videoflix.com>"},
     )
     msg.attach_alternative(html_content, "text/html")
-    queue = django_rq.get_queue('email', autocommit=True)
+    queue = django_rq.get_queue('default', autocommit=True)
     queue.enqueue(msg.send)
 
 
@@ -50,5 +50,5 @@ def send_password_reset_mail(email, uid, token):
         headers={"List-Unsubscribe": "<info@Videoflix.com>"},
     )
     msg.attach_alternative(html_content, "text/html")
-    queue = django_rq.get_queue('email', autocommit=True)
+    queue = django_rq.get_queue('default', autocommit=True)
     queue.enqueue(msg.send)
