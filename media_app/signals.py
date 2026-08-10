@@ -12,8 +12,8 @@ import django_rq
 def video_post_Save(sender, instance, created, **kwargs):
     if created:
         queue = django_rq.get_queue('default', autocommit=True)
-        queue.enqueue(convert_to_480p, instance.video_file.path)
-        queue.enqueue(convert_to_720p, instance.video_file.path)
+        queue.enqueue(convert_to_480p, instance.video_file.path, instance.id)
+        queue.enqueue(convert_to_720p, instance.video_file.path, instance.id)
 
 
 @receiver(post_delete, sender=VideoModel)
