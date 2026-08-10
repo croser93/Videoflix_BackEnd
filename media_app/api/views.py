@@ -11,4 +11,5 @@ class VideoView(APIView):
     def get(self, request):
         videos = VideoModel.objects.all()
         serializer = VideoSerializer(videos, many=True, context={'request': request})
+        print(serializer.data)
         return Response(serializer.data, status=200)

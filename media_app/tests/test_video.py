@@ -21,3 +21,9 @@ class VideoTest(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertEqual(response.data[0]['id'], self.video)
+        self.assertEqual(response.data[0]['created_at'], self.video.created_at.isoformat().replace('+00:00', 'Z'))
+        self.assertEqual(response.data[0]['title'], self.video.title)
+        self.assertEqual(response.data[0]['description'], self.video.description)
+        self.assertTrue(response.data[0]['thumbnail_url'])
+        self.assertEqual(response.data[0]['category'], self.video.category)
