@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 class CookieJWTAuth(JWTAuthentication):
     """
     Authenticate requests using the JWT access token stored in the
@@ -14,8 +14,9 @@ class CookieJWTAuth(JWTAuthentication):
         
         if access is None:
             return None
-        
-        validated = self.get_validated_token(access)
-        user = self.get_user(validated_token = validated)
-        return (user, validated)
-        
+        try:
+            validated = self.get_validated_token(access)
+            user = self.get_user(validated_token = validated)
+            return (user, validated)
+        except (InvalidToken, TokenError):
+            return None 

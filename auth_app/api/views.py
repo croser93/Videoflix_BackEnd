@@ -1,8 +1,7 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import  AllowAny, IsAuthenticated
+from rest_framework.permissions import  AllowAny
 from .serializer import RegisterSerializer, LoginSerializer, PasswordResetSerializer, passwordConfirmSerializer
 from rest_framework.response import Response
-from rest_framework import status
 from auth_app.utils import encode_uid, account_activation_token, get_user_from_uidb64
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (TokenRefreshView)
