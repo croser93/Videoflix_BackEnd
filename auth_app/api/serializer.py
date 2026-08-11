@@ -76,7 +76,6 @@ class passwordConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
-
     def validate(self, data):
         if data['new_password'] == data['confirm_password']:
             return data

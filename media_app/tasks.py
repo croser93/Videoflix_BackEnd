@@ -11,7 +11,6 @@ def convert_to_480p(source, video_id):
     cmd = 'ffmpeg -i "{}" -s hd480 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls "{}"'.format(source, path_name)
     subprocess.run(cmd, shell=True)
 
-
 def convert_to_720p(source, video_id):
     """Transcode the source video into a 720p HLS stream (playlist + segments)."""
     source_path = Path(source)

@@ -9,7 +9,6 @@ from auth_app.models import CustomUser
 from auth_app.tasks import send_activation_email, send_password_reset_mail
 from django.contrib.auth.tokens import default_token_generator
 
-
 class RegisterView(APIView):
     """
     Register a new user account and trigger an activation email.
@@ -77,7 +76,7 @@ class LoginView(APIView):
             refresh_token = str(token)
             access_token = str(token.access_token)
 
-            response = Response({'detail': '"Login successful', 'user': {'id':user.id, 'username': user.email}} ,status=200)
+            response = Response({'detail': 'Login successful', 'user': {'id':user.id, 'username': user.email}} ,status=200)
             response.set_cookie('refresh_token', refresh_token, httponly=True)
             response.set_cookie('access_token', access_token, httponly=True)
             return response

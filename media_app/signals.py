@@ -8,7 +8,6 @@ import os
 import django_rq
 import shutil
 
-
 @receiver(post_save, sender=VideoModel)
 def video_post_Save(sender, instance, created, **kwargs):
     """Enqueue HLS transcoding jobs (480p/720p/1080p) for a newly created video."""
@@ -17,7 +16,6 @@ def video_post_Save(sender, instance, created, **kwargs):
         queue.enqueue(convert_to_480p, instance.video_file.path, instance.id)
         queue.enqueue(convert_to_720p, instance.video_file.path, instance.id)
         queue.enqueue(convert_to_1080p, instance.video_file.path, instance.id)
-
 
 @receiver(post_delete, sender=VideoModel)
 def video_auto_delete(sender, instance, **kwargs):
