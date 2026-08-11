@@ -131,6 +131,20 @@ http://localhost:8025
 
 Every email triggered by the API (e.g. after registering a new user or requesting a password reset) will appear there — useful for testing the full flow without a real SMTP provider. See the warning above for switching to real email delivery.
 
+## Troubleshooting
+
+**`backend.entrypoint.sh: not found` (or similar) when the `web` container starts**
+This happens when `backend.entrypoint.sh` has Windows-style line endings (CRLF) instead of Unix-style (LF). The container runs Linux, which doesn't understand the extra `\r` character at the end of each line, so it fails to find/execute the script even though the file is clearly there. This is a common issue if the repository was cloned or edited on Windows.
+
+Fix: convert the file's line endings from CRLF to LF, then rebuild the container. In VS Code, open `backend.entrypoint.sh`, click on `CRLF` in the bottom status bar, and switch it to `LF`, then save the file. Alternatively, from a terminal with `dos2unix` installed:
+```bash
+dos2unix backend.entrypoint.sh
+```
+Afterwards, rebuild the container so the fixed file is picked up:
+```bash
+docker-compose up -d --build
+```
+
 ## Project Structure
 
 ```
