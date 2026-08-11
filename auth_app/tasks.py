@@ -4,10 +4,12 @@ from django.template.loader import render_to_string
 import base64
 import django_rq
 
-url = 'http://127.0.0.1:8000'
+url = 'http://127.0.0.1:4000'
 
 def send_activation_email(email, uid, token):
-    uid_token_link = f"{url}/api/activate/{uid}/{token}/" 
+    """Render and enqueue the account activation email for asynchronous sending."""
+
+    uid_token_link = f"{url}/pages/auth/activate.html?uid={uid}&token={token}"
 
     with open("auth_app/static/logo.png", "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode("utf-8") 
@@ -31,8 +33,9 @@ def send_activation_email(email, uid, token):
 
     
 def send_password_reset_mail(email, uid, token):
+    """Render and enqueue the password reset email for asynchronous sending."""
 
-    uid_token_link = f"{url}/api/reset_password/{uid}/{token}/" 
+    uid_token_link = f"{url}/pages/auth/confirm_password.html?uid={uid}&token={token}"
     
     with open("auth_app/static/logo.png", "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode("utf-8") 

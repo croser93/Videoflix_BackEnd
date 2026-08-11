@@ -9,8 +9,13 @@ from auth_app.models import CustomUser
 from auth_app.tasks import send_activation_email, send_password_reset_mail
 from django.contrib.auth.tokens import default_token_generator
 
-
 class RegisterView(APIView):
+    """
+    Register a new user account and trigger an activation email.
+
+    Endpoints:
+    - POST   /api/register/ - Create a new inactive user account
+    """
 
     permission_classes = [AllowAny]
 
@@ -28,6 +33,12 @@ class RegisterView(APIView):
         return Response({"user": serializer.data, "token": token}, status=201)
 
 class ActivateTokenView(APIView):
+    """
+    Activate a user account using the link sent via email.
+
+    Endpoints:
+    - GET    /api/activate/{uidb64}/{token}/ - Activate a user account
+    """
 
     permission_classes = [AllowAny]
 
@@ -48,6 +59,12 @@ class ActivateTokenView(APIView):
         return Response({"message": "Account not activated!."}, status=400)
 
 class LoginView(APIView):
+    """
+    Authenticate a user and issue JWT cookies.
+
+    Endpoints:
+    - POST   /api/login/ - Log in a user and set access/refresh token cookies
+    """
 
     def post(self, request):
         data = request.data
@@ -59,7 +76,7 @@ class LoginView(APIView):
             refresh_token = str(token)
             access_token = str(token.access_token)
 
-            response = Response({'detail': '"Login successful', 'user': {'id':user.id, 'username': user.email}} ,status=200)
+            response = Response({'detail': 'Login successful', 'user': {'id':user.id, 'username': user.email}} ,status=200)
             response.set_cookie('refresh_token', refresh_token, httponly=True)
             response.set_cookie('access_token', access_token, httponly=True)
             return response
@@ -67,6 +84,12 @@ class LoginView(APIView):
             return Response(serializer.errors, status=401)
 
 class LogoutView(APIView):
+    """
+    Log out a user by blacklisting their refresh token.
+
+    Endpoints:
+    - POST   /api/logout/ - Blacklist the refresh token and delete auth cookies
+    """
 
     permission_classes = [AllowAny]
 
@@ -87,6 +110,13 @@ class LogoutView(APIView):
         return response
 
 class RefreshCookieView(TokenRefreshView):
+    """
+    Refresh the access token using the refresh token stored in a cookie.
+
+    Endpoints:
+    - POST   /api/token/refresh/ - Issue a new access token cookie
+    """
+
     def post(self, request):
 
         refresh = request.COOKIES.get('refresh_token')
@@ -105,6 +135,12 @@ class RefreshCookieView(TokenRefreshView):
         return response
 
 class PasswordResetView(APIView):
+    """
+    Request a password reset email for a given email address.
+
+    Endpoints:
+    - POST   /api/password_reset/ - Send a password reset email if the account exists
+    """
 
     def post(self, request):
         data = request.data
@@ -121,6 +157,13 @@ class PasswordResetView(APIView):
         return Response({'detail': 'Invalid Email.'}, status=400)
 
 class PasswordConfirmView(APIView):
+    """
+    Confirm a password reset using the link sent via email.
+
+    Endpoints:
+    - POST   /api/password_confirm/{uidb64}/{token}/ - Set a new password for the account
+    """
+
     def post (self, request, uidb64, token):
 
         user = get_user_from_uidb64(uidb64)
