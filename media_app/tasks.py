@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 
 def convert_to_480p(source, video_id):
+    """Transcode the source video into a 480p HLS stream (playlist + segments)."""
     source_path = Path(source)
     path_name = source_path.parent / str(video_id) / "480p" / "index.m3u8"
     os.makedirs(path_name.parent, exist_ok=True)
@@ -12,6 +13,7 @@ def convert_to_480p(source, video_id):
 
 
 def convert_to_720p(source, video_id):
+    """Transcode the source video into a 720p HLS stream (playlist + segments)."""
     source_path = Path(source)
     path_name = source_path.parent / str(video_id) / "720p" / "index.m3u8"
     os.makedirs(path_name.parent, exist_ok=True)
@@ -19,6 +21,7 @@ def convert_to_720p(source, video_id):
     subprocess.run(cmd, shell=True)
 
 def convert_to_1080p(source, video_id):
+    """Transcode the source video into a 1080p HLS stream (playlist + segments)."""
     source_path = Path(source)
     path_name = source_path.parent / str(video_id) / "1080p" / "index.m3u8"
     os.makedirs(path_name.parent, exist_ok=True)

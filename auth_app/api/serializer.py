@@ -3,6 +3,11 @@ from auth_app.models import CustomUser
 from django.contrib.auth import authenticate
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for registering a new user.
+
+    confirmed_password = repeated password, checked against password for a match during save
+    """
 
     confirmed_password = serializers.CharField(write_only=True)
 
@@ -32,6 +37,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return account
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for authenticating a user with email and password.
+
+    email = the user's email address used to authenticate
+    password = the user's password used to authenticate
+    """
 
     email = serializers.EmailField(write_only=True)
     password = serializers.CharField(write_only=True)
@@ -46,10 +57,21 @@ class LoginSerializer(serializers.Serializer):
     
 
 class PasswordResetSerializer(serializers.Serializer):
+    """
+    Serializer for requesting a password reset email.
+
+    email = address a password reset email is sent to, if it belongs to an existing account
+    """
 
     email = serializers.EmailField(write_only=True)
 
 class passwordConfirmSerializer(serializers.Serializer):
+    """
+    Serializer for confirming a new password.
+
+    new_password = the new password to set on the account
+    confirm_password = repeated new password, checked against new_password for a match
+    """
 
     new_password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)

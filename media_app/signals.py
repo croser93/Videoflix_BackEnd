@@ -11,6 +11,7 @@ import shutil
 
 @receiver(post_save, sender=VideoModel)
 def video_post_Save(sender, instance, created, **kwargs):
+    """Enqueue HLS transcoding jobs (480p/720p/1080p) for a newly created video."""
     if created:
         queue = django_rq.get_queue('default', autocommit=True)
         queue.enqueue(convert_to_480p, instance.video_file.path, instance.id)
@@ -20,6 +21,7 @@ def video_post_Save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=VideoModel)
 def video_auto_delete(sender, instance, **kwargs):
+    """Delete the source video file, thumbnail, and generated HLS folder when a video is deleted."""
     if instance.video_file:
 
         if os.path.isfile(instance.video_file.path):
