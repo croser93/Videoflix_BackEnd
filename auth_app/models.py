@@ -23,7 +23,7 @@ class CustomUserManager(UserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractUser):
-    username = None
+    username = models.CharField(max_length=150, blank=True, null=True)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=False)
 

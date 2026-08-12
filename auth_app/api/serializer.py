@@ -23,6 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = self.validated_data['email']
         pw = self.validated_data['password']
         confirmed_password = self.validated_data['confirmed_password']
+        name = email.split('@')[0]
 
         all_emails = CustomUser.objects.filter(email=email).exists()
 
@@ -31,8 +32,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         if all_emails:
             raise serializers.ValidationError({'error' : 'email exist'})
-        
-        account = CustomUser.objects.create_user(email=email, password=pw)
+
+        account = CustomUser.objects.create_user(email=email, password=pw, username=name)
         self.instance = account
         return account
 
